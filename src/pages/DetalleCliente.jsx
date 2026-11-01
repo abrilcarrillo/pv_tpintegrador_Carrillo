@@ -1,43 +1,84 @@
-import '../css/detallecliente.css'
+import '../css/detallecliente.css';
 import { useEffect, useState } from "react";
+import useAutorizaciones from "../hooks/useAutorizaciones";
 import { useParams, useNavigate } from "react-router-dom";
+import clientesService from "../services/clientesService";
  
 const DetalleCliente = () => {
- const { id } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const { admin } = useAutorizaciones();
+  const role = admin?.sector;
 
   const [cliente, setCliente] = useState(null);
   const [mensaje, setMensaje] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch(`https://fakestoreapi.com/users/${id}`)
-      .then((res) => res.json())
-      .then((data) => setCliente(data));
+    let activo = true;
+
+    const cargarCliente = async () => {
+      setLoading(true);
+      setError(false);
+      setCliente(null);
+
+      try {
+        const data = await clientesService.obtenerCliente(id);
+
+        if (activo) {
+          setCliente(data);
+        }
+      } catch (error) {
+        if (activo) {
+          setError(true);
+        }
+      } finally {
+        if (activo) {
+          setLoading(false);
+        }
+      }
+    };
+
+    cargarCliente();
+
+    return () => {
+      activo = false;
+    };
   }, [id]);
 
   const eliminarCliente = async () => {
-    try {
-      const respuesta = await fetch(
-        `https://fakestoreapi.com/users/${id}`,
-        {
-          method: "DELETE",
-        }
-      );
+    if (role?.trim() !== "Gerencia") {
+      return;
+    }
 
-      if (respuesta.ok) {
+    try {
+      const respuesta = await clientesService.eliminarCliente(id);
+
+      if (respuesta) {
         setMensaje("Cliente eliminado correctamente");
 
         setTimeout(() => {
           navigate("/clientes");
-        }, 2000);
+        }, 5000);
+      } else {
+        setMensaje("No se encontró el cliente");
       }
     } catch (error) {
       setMensaje("Error al eliminar cliente");
     }
   };
-  if (!cliente) {
+
+  if (loading) {
     return <h2>Cargando cliente...</h2>;
+  }
+
+  if (error) {
+    return <h2>Error al cargar el cliente.</h2>;
+  }
+
+  if (!cliente) {
+    return <h2>Cliente no encontrado.</h2>;
   }
 
   return (
@@ -45,55 +86,58 @@ const DetalleCliente = () => {
       <h1>Ficha del Cliente</h1>
       <p>Rol actual: {role}</p>
 
-      {mensaje && <p className = 'mensaje-eliminado'>{mensaje}</p>}
+      {mensaje && <p className="mensaje-eliminado">{mensaje}</p>}
 
       <p>
         <strong>ID:</strong> {cliente.id}
       </p>
 
       <p>
-        <strong>Nombre:</strong>{" "}
-        {cliente.name.firstname} {cliente.name.lastname}
+        <strong>Nombre y Apellido:</strong>{" "}
+        {cliente.name?.firstname ?? "No especificado"}{" "}
+        {cliente.name?.lastname === "-"
+          ? ""
+          : cliente.name?.lastname ?? ""}
       </p>
 
       <p>
-        <strong>Email:</strong> {cliente.email}
+        <strong>Email:</strong> {cliente.email ?? "No especificado"}
       </p>
 
       <p>
-        <strong>Teléfono:</strong> {cliente.phone}
+        <strong>Teléfono:</strong> {cliente.phone ?? "No especificado"}
       </p>
 
       <h2>Dirección</h2>
 
       <p>
-        <strong>Calle:</strong> {cliente.address.street}
+        <strong>Calle:</strong> {cliente.address?.street ?? "No especificado"}
       </p>
 
       <p>
-        <strong>Número:</strong> {cliente.address.number}
+        <strong>Número:</strong> {cliente.address?.number ?? "No especificado"}
       </p>
 
       <p>
-        <strong>Código Postal:</strong> {cliente.address.zipcode}
+        <strong>Código Postal:</strong> {cliente.address?.zipcode ?? "No especificado"}
       </p>
 
       <p>
-        <strong>Ciudad:</strong> {cliente.address.city}
+        <strong>Ciudad:</strong> {cliente.address?.city ?? "No especificado"}
       </p>
 
       <h2>Credenciales</h2>
 
       <p>
-        <strong>Usuario:</strong> {cliente.username}
+        <strong>Usuario:</strong> {cliente.username ?? "No especificado"}
       </p>
 
       <p>
-        <strong>Contraseña:</strong> {cliente.password}
+        <strong>Contraseña:</strong> {cliente.password ?? "No especificado"}
       </p>
 
       {role?.trim() === "Gerencia" && (
-        <button className='btn-eliminar'onClick={eliminarCliente}>
+        <button className="btn-eliminar" onClick={eliminarCliente}>
           Eliminar Cliente
         </button>
       )}

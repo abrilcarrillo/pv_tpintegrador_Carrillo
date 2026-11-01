@@ -36,14 +36,57 @@ const usuarios = [
     sector: 'Gerencia'
   }
 ]
-const login = (email, password, sector) => {
+
+const login = (email, password) => {
   return usuarios.find(
     usuario =>
       usuario.email === email &&
-      usuario.password === password &&
-      usuario.sector === sector
+      usuario.password === password
   )
 }
+
+const validar = (email, password) => {
+  const nuevosErrores = {}
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  if (!email) {
+    nuevosErrores.email = 'El email es obligatorio'
+  } else if (!emailRegex.test(email)) {
+    nuevosErrores.email = 'Email inválido'
+  }
+
+  if (!password) {
+    nuevosErrores.password = 'La contraseña es obligatoria'
+  } else {
+    if (password.length < 8) {
+      nuevosErrores.password = 'Mínimo 8 caracteres'
+    } else if (!/[A-Z]/.test(password)) {
+      nuevosErrores.password = 'Debe tener una mayúscula'
+    } else if (!/[0-9]/.test(password)) {
+      nuevosErrores.password = 'Debe tener un número'
+    }
+  }
+
+  return nuevosErrores
+}
+
+const contarUsuariosPorSector = (sector) => {
+  return usuarios.filter(
+    usuario => usuario.sector === sector
+  ).length
+}
+
+const obtenerSector = (email) => {
+  const usuario = usuarios.find(
+    usuario => usuario.email === email.trim().toLowerCase()
+  )
+
+  return usuario ? usuario.sector : ""
+}
+
 export default {
-  login
+  login,
+  validar,
+  contarUsuariosPorSector,
+  obtenerSector
 }

@@ -3,19 +3,18 @@ const Footer = () => {
   return (
     <footer>
       <p>
-        &copy; 2026 Panel de Control de Clientes | Trabajo Integrador
-        Programacion Visual - GRUPO 5
+        &copy; 2026 Panel de Control de Clientes | 
+        Programacion Visual - 
       </p>
 
-      <p>Integrantes:</p>
-
-      <p>
-        Aramayo Lourdes | Cabrera Luisana | Carrillo Abril
+       <p>
+        <strong>Trabajo Final Individual</strong>
       </p>
 
       <p>
-        Maidana Antonella | Meruvia Jimena | Quispe Guadalupe
+        Carrillo Marianela Valentina Abril - 3° Informática Escuela de Minas
       </p>
+
     </footer>
   );
 };
