@@ -57,7 +57,7 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
 
-        <p style={{ color: 'red', minHeight: '18px' }}>
+        <p className="mensaje-error">
           {errores.email || ' '}
         </p>
 
@@ -68,16 +68,16 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <p style={{ color: 'red', minHeight: '18px' }}>
+        <p className="mensaje-error">
           {errores.password || ' '}
         </p>
 
         <label>Sector:</label>
-        <select value={sectorDetectado} disabled>
-          <option value="">Sector no detectado</option>
-          <option value="Soporte">Soporte</option>
-          <option value="Gerencia">Gerencia</option>
-        </select>
+        <input
+          type="text"
+          value={sectorDetectado || "Sector no detectado"}
+          readOnly
+        />
 
         <button type="submit">Ingresar</button>
       </form>

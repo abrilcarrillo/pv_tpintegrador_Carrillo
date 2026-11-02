@@ -5,17 +5,32 @@ import clientesService from "../services/clientesService";
 
 const FormCliente = ({ onClienteCreado }) => {
 
-    const [nombre, setNombre] = useState("");
-    const [apellido, setApellido] = useState("");
-    const [email, setEmail] = useState("");
-    const [telefono, setTelefono] = useState("");
-    const [ciudad, setCiudad] = useState("");
+    const [formulario, setFormulario] = useState({
+        nombre: "",
+        apellido: "",
+        email: "",
+        telefono: "",
+        ciudad: ""
+    });
 
     const [mensaje, setMensaje] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+    const manejarCambio = (e) => {
+        const { name, value } = e.target;
+
+        setFormulario({
+            ...formulario,
+            [name]: value
+        });
+
+        setError("");
+    };
+
     const validar = () => {
+        const { nombre, apellido, email, telefono, ciudad } = formulario;
+
         if (!nombre.trim()) {
             return "El nombre es obligatorio";
         }
@@ -89,6 +104,8 @@ const FormCliente = ({ onClienteCreado }) => {
             return;
         }
 
+        const { nombre, apellido, email, telefono, ciudad } = formulario;
+
         const nuevoCliente = {
             email: email.trim(),
             username: nombre.toLowerCase().replace(/\s/g, ""),
@@ -114,12 +131,14 @@ const FormCliente = ({ onClienteCreado }) => {
             setTimeout(() => {
                 setMensaje("");
             }, 3000);
-            
-            setNombre("");
-            setApellido("");
-            setEmail("");
-            setTelefono("");
-            setCiudad("");
+           
+            setFormulario({
+                nombre: "",
+                apellido: "",
+                email: "",
+                telefono: "",
+                ciudad: ""
+            });
 
             onClienteCreado?.(respuesta);
 
@@ -147,11 +166,9 @@ const FormCliente = ({ onClienteCreado }) => {
 
                     <Form.Control
                         type="text"
-                        value={nombre}
-                        onChange={(e) => {
-                           setNombre(e.target.value);
-                           setError("");
-                        }}
+                        name="nombre"
+                        value={formulario.nombre}
+                        onChange={manejarCambio}
                     />
 
                 </Form.Group>
@@ -160,11 +177,9 @@ const FormCliente = ({ onClienteCreado }) => {
                     <Form.Label>Apellido</Form.Label>
                     <Form.Control
                         type="text"
-                        value={apellido}
-                        onChange={(e) => {
-                            setApellido(e.target.value);
-                            setError("");
-                        }}
+                        name="apellido"
+                        value={formulario.apellido}
+                        onChange={manejarCambio}
                     />
                 </Form.Group>
 
@@ -174,11 +189,9 @@ const FormCliente = ({ onClienteCreado }) => {
 
                     <Form.Control
                         type="text"
-                        value={email}
-                        onChange={(e) => {
-                           setEmail(e.target.value);
-                           setError("");
-                        }}
+                        name="email"
+                        value={formulario.email}
+                        onChange={manejarCambio}
                     />
 
                 </Form.Group>
@@ -189,11 +202,9 @@ const FormCliente = ({ onClienteCreado }) => {
 
                     <Form.Control
                         type="text"
-                        value={telefono}
-                        onChange={(e) => {
-                            setTelefono(e.target.value);
-                            setError("");
-                        }}
+                        name="telefono"
+                        value={formulario.telefono}
+                        onChange={manejarCambio}
                     />
 
                 </Form.Group>
@@ -204,11 +215,9 @@ const FormCliente = ({ onClienteCreado }) => {
 
                     <Form.Control
                         type="text"
-                        value={ciudad}
-                        onChange={(e) => {
-                            setCiudad(e.target.value);
-                            setError("");
-                        }}
+                        name="ciudad"
+                        value={formulario.ciudad}
+                        onChange={manejarCambio}
                     />
 
                 </Form.Group>
